@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+import sys
+
+version = '0.0.1'
+
+
+class Colors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+class Commands:
+    @staticmethod
+    def list():
+        """Lists available commands"""
+
+        print(
+            'LaraFlask Framework' + Colors.OKGREEN + ' %s\n\n' % version + Colors.WARNING + 'Usage:\n  ' + Colors.ENDC +
+            'command [options] [arguments]\n')
+        print(Colors.WARNING + 'Available commands:' + Colors.ENDC)
+
+        methods = [x for x, y in Commands.__dict__.items() if isinstance(y, staticmethod)]
+
+        for method in methods:
+            print('  ' + Colors.OKGREEN + method + Colors.ENDC + '   ' + Commands.__dict__[method].__func__.__doc__)
+
+
+class CommandHandler:
+    @staticmethod
+    def execute(args):
+        if len(args) == 1:
+            Commands.list()
+            return
+
+        if not CommandHandler.exists(args[1]):
+            CommandHandler.print_does_not_exist(args[1])
+            return
+
+        Commands.__dict__[args[1]].__func__()
+
+    @staticmethod
+    def exists(command):
+        return command in Commands.__dict__.keys()
+
+    @staticmethod
+    def print_does_not_exist(command):
+        print(Colors.FAIL + 'Command "%s" is not defined.' % command + Colors.ENDC)
+
+
+if __name__ == '__main__':
+    CommandHandler.execute(sys.argv)
