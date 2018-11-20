@@ -19,16 +19,22 @@ class Commands:
     @staticmethod
     def list():
         """Lists available commands"""
-
         print(
             'LaraFlask Framework' + Colors.OKGREEN + ' %s\n\n' % version + Colors.WARNING + 'Usage:\n  ' + Colors.ENDC +
             'command [options] [arguments]\n')
         print(Colors.WARNING + 'Available commands:' + Colors.ENDC)
 
         methods = [x for x, y in Commands.__dict__.items() if isinstance(y, staticmethod)]
+        longest_method_name = len(max(methods, key=len))
 
         for method in methods:
-            print('  ' + Colors.OKGREEN + method + Colors.ENDC + '   ' + Commands.__dict__[method].__func__.__doc__)
+            print('  ' + Colors.OKGREEN + method + Colors.ENDC + ' ' * (longest_method_name - len(method) + 2) +
+                  Commands.__dict__[method].__func__.__doc__)
+
+    @staticmethod
+    def serve(args):
+        """Serve the application on the Python Flask development server"""
+        print(args)
 
 
 class CommandHandler:
@@ -42,7 +48,7 @@ class CommandHandler:
             CommandHandler.print_does_not_exist(args[1])
             return
 
-        Commands.__dict__[args[1]].__func__()
+        Commands.__dict__[args[1]].__func__(args[2:])
 
     @staticmethod
     def exists(command):
